@@ -4,12 +4,20 @@ var socket = {};
 
 socket.io = io;
 
-io.on('connection', function(socket){
+io.on('connection', (socket) => {
     console.log('A user connected');
+    socket.emit("message", chatmessage("Server", "Welcome"));
+
+    socket.on('chat', (data) => {
+        io.sockets.emit('chat', data)
+    })
 });
 
-socket.sendNotification = function() {
-    io.sockets.emit('hello', {msg: 'Hello World!'});
+const chatmessage = (from, text) => {
+    return {
+        from,
+        text,
+        time: new Date().getTime()
+    }
 }
-
 module.exports = socket;
