@@ -21,9 +21,7 @@
             <div class="card">
                 <div class="card-body">
                     <h3 class="d-xl-flex justify-content-xl-center align-items-xl-center">Players - <span id="num_of_players">0</span> / 6</h3>
-                    <ul class="list-group" id="player_board">
-                        <li class="list-group-item"><span>-</span></li>
-                    </ul>
+                    <ul class="list-group" id="player_board"></ul>
                 </div>
             </div>
             <div class="card">
@@ -33,9 +31,16 @@
                     <button 
                         class="btn btn-primary" 
                         type="button" 
-                        style="margin-left: 10px;font-family: 'Roboto Slab', serif;" 
+                        style="margin-left: 5px;font-family: 'Roboto Slab', serif;" 
                         id="join">
                         Join Game
+                    </button>
+                    <button 
+                        class="btn btn-primary" 
+                        type="button" 
+                        style="margin-left: 5px;font-family: 'Roboto Slab', serif;"
+                        id="ready" disabled>
+                        Ready!
                     </button>
                 </div>
             </div>

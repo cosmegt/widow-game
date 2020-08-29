@@ -41,7 +41,10 @@ class Controller{
 
     setup(){
         document.getElementById("join")
-            .addEventListener("click", this.user_join_game )
+            .addEventListener("click", this.user_join_game );
+        
+        document.getElementById("ready")
+            .addEventListener("click", this.set_player_ready);
     }
 
     user_join_game(){
@@ -50,7 +53,12 @@ class Controller{
         Game.join_game(player);
         // no callbacks here because i like to play dangerous
         Controller.remove_join_button();
-        Controller.update_player_board(username)
+        Controller.update_player_board(username);
+        Controller.add_ready_button();
+    }
+
+    set_player_ready(){
+        Game.set_player_ready();
     }
 
     static remove_join_button(){
@@ -59,16 +67,24 @@ class Controller{
         document.getElementById("username").disabled = true;
     }
 
+    static add_ready_button(){
+        document.getElementById("ready").disabled = false;
+    }
+
     static update_player_board(arr){
-        console.log(arr)
         let num_of_players = arr.player_size;
-        let players = arr.players
+        let players = arr.player_list
         document.getElementById("num_of_players").innerHTML = num_of_players;
         let HTML = "";
         for(let i in players){
-            HTML += `<li class="list-group-item">${players[i]}</li>`
+            let is_ready = (players[i].is_ready === true) ? "Ready" : "Not Ready"
+            HTML += `<li class="list-group-item">
+                    ${players[i].username} - ${is_ready} </li>`
         };
         document.getElementById("player_board").innerHTML = HTML;
+        if(num_of_players >= 6){
+            document.getElementById("join").disabled = true;
+        }
     }
 
 }   
@@ -82,6 +98,12 @@ class Game{
             username : username
         })
     }
+    static set_player_ready(){
+        socket.emit("playerready", {
+            ready: true
+        });
+    }
+
 }
 
 class Player{

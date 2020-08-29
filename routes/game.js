@@ -26,21 +26,54 @@ module.exports = class Game{
     }
 
     addPlayer(id, username){
-        console.log("added player")
         this.player_size++;
         this.players.push(id = {
-            username : username
+            username : username,
+            id : id,
+            is_ready: false
         } )
     }
 
+    deletePlayer(id){
+        let players = this.players;
+        let index = -1;
+        players.find(function(item, i){
+            if (item != undefined) {
+                if(id === item.id){
+                    index = i;
+                    players.splice(i, 1);
+                }
+            }
+          });
+    }
+
+    playerReady(id){
+        let players = this.players;
+        let index = -1;
+        players.find(function(item, i){
+            if (item != undefined) {
+                if(id === item.id){
+                    index = i;
+                    players[i].is_ready = true;
+                }
+            }
+          });
+    }
+
     getPlayerList(){
-        let players_usernames = [];
+        let player_list = [];
+        let player_num = 0;
         this.players.forEach(element => {
-            players_usernames.push(element.username)
+            let arr = {
+                username : element.username,
+                is_ready : element.is_ready
+            }
+            player_list.push(arr);
+            player_num++;
         });
         return { 
-            players : players_usernames ,
-            player_size : this.player_size
+            player_list : player_list ,
+            player_size : player_num,
         };
     }
 
