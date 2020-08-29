@@ -6,18 +6,11 @@ socket.io = io;
 
 io.on('connection', (socket) => {
     console.log('A user connected');
-    socket.emit("message", chatmessage("Server", "Welcome"));
 
-    socket.on('chat', (data) => {
-        io.sockets.emit('chat', data)
+    socket.on('gameroom', (data) => {
+        io.sockets.emit('gameroom', data)
     })
 });
 
-const chatmessage = (from, text) => {
-    return {
-        from,
-        text,
-        time: new Date().getTime()
-    }
-}
+
 module.exports = socket;
