@@ -20,15 +20,24 @@
         <div class="card-group">
             <div class="card">
                 <div class="card-body">
-                    <h3 class="d-xl-flex justify-content-xl-center align-items-xl-center">Players - 0 / 0</h3>
-                    <ul class="list-group">
+                    <h3 class="d-xl-flex justify-content-xl-center align-items-xl-center">Players - <span id="num_of_players">0</span> / 6</h3>
+                    <ul class="list-group" id="player_board">
                         <li class="list-group-item"><span>-</span></li>
                     </ul>
                 </div>
             </div>
             <div class="card">
                 <div class="card-body text-center" style="padding-top: 3%;padding-bottom: 50%;">
-                    <h1 class="text-center d-xl-flex justify-content-xl-center align-items-xl-center card-title" style="margin-bottom: 15px;">Enter Username</h1><input type="text" placeholder="username" style="font-family: arial"/><button class="btn btn-primary" type="button" style="margin-left: 10px;font-family: 'Roboto Slab', serif;">Join Game</button></div>
+                    <h1 class="text-center d-xl-flex justify-content-xl-center align-items-xl-center card-title" style="margin-bottom: 15px;">Enter Username</h1>
+                    <input type="text" placeholder="username" id="username" style="font-family: arial"/>
+                    <button 
+                        class="btn btn-primary" 
+                        type="button" 
+                        style="margin-left: 10px;font-family: 'Roboto Slab', serif;" 
+                        id="join">
+                        Join Game
+                    </button>
+                </div>
             </div>
             <div class="card"><div class="card-body">
     <h3>How To Play</h3>
@@ -45,6 +54,7 @@
 </div></div>
         </div>
     </div>
+    <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="/javascripts/client.js">
         main()

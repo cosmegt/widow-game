@@ -1,9 +1,6 @@
-var express = require("express");
-var gameRouter = express.Router();
-
 module.exports = class Game{
-    constructor(player_number, players){
-        this.player_number = 0;
+    constructor(){
+        this.player_size = 0;
         this.players = [];
         this.cards = [
             "diamonds_a", "diamonds_2", "diamonds_3",
@@ -28,10 +25,23 @@ module.exports = class Game{
         ];
     }
 
-    addPlayer(username, id){
-        this.player_number++;
-        this.players.push({ username })
-        console.log(this.players)
+    addPlayer(id, username){
+        console.log("added player")
+        this.player_size++;
+        this.players.push(id = {
+            username : username
+        } )
+    }
+
+    getPlayerList(){
+        let players_usernames = [];
+        this.players.forEach(element => {
+            players_usernames.push(element.username)
+        });
+        return { 
+            players : players_usernames ,
+            player_size : this.player_size
+        };
     }
 
     get_deck() {
@@ -57,19 +67,3 @@ module.exports = class Game{
         return deck;
       }
 }
-
-gameRouter.get("/getDeck", function(req, res, next){
-    let deck = new Deck();
-    let all_cards = deck.get_deck();
-    res.send(all_cards);
-
-})
-
-gameRouter.get("/getShuffledDeck", function(req,res,next){
-    let deck = new Deck();
-    let shuffled = deck.get_shuffled_deck();
-    res.send(shuffled);
-})
-
-
-// module.exports = gameRouter;

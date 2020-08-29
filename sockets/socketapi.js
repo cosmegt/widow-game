@@ -9,11 +9,17 @@ socket.io = io;
 
 io.on('connection', (socket) => {
     console.log('A user connected');
+    updateBoard();
 
-    socket.on('gameroom', (data) => {
-        game.addPlayer(data.username);
-        io.sockets.emit('gameroom', data)
-    })
+    socket.on('addplayer', (data) => {
+        io.sockets.emit('addplayer', data)
+        game.addPlayer(data.id, data.username);
+        updateBoard();
+    });
 });
+
+function updateBoard(){
+    io.sockets.emit("updateBoard", game.getPlayerList())
+}
 
 module.exports = socket;
