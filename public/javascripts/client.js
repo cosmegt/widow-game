@@ -50,10 +50,11 @@ class Game{
     constructor(){
     }
 
-    static join_game(player){
+    static join_game(player, id){
         let username = player.get_name();
         socket.emit('gameroom', {
-            username: username
+            username: username,
+            id : socket.id
         })   
     }
 }
