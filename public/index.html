@@ -1,18 +1,54 @@
+<!DOCTYPE html>
 <html>
 
 <head>
-  <title>Express</title>
-  <link rel="stylesheet" href="/stylesheets/style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>widow game</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Playfair+Display">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab">
+    <link rel="stylesheet" href="assets/css/styles.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
 </head>
 
-<body>
-  <h1>Widow</h1>
-  <input type="text" id="username" placeholder="username">
-  <button id="join">Join game</button>
+<body style="font-family: 'Playfair Display', serif;">
+    <div class="container" style="padding: 30px;">
+        <h1 class="text-center text-danger" style="color: rgb(224,35,53);font-size: 50px;font-family: Montserrat, sans-serif;text-align: center;"><strong style="font-family: 'Playfair Display', serif;text-align: center;width: 0px;letter-spacing: 4px;color: rgb(55,55,55);">Widow - The Card Game</strong></h1>
+    </div>
+    <div class="container">
+        <div class="card-group">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="d-xl-flex justify-content-xl-center align-items-xl-center">Players - 0 / 0</h3>
+                    <ul class="list-group">
+                        <li class="list-group-item"><span>-</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body text-center" style="padding-top: 3%;padding-bottom: 50%;">
+                    <h1 class="text-center d-xl-flex justify-content-xl-center align-items-xl-center card-title" style="margin-bottom: 15px;">Enter Username</h1><input type="text" placeholder="username" style="font-family: arial"/><button class="btn btn-primary" type="button" style="margin-left: 10px;font-family: 'Roboto Slab', serif;">Join Game</button></div>
+            </div>
+            <div class="card"><div class="card-body">
+    <h3>How To Play</h3>
+    <ul>
+        <li><h4>Goal</h4></li>
+        <li>The goal of the game is to get the most valued poker hand on the table.</li>
+        <li><h4>Turn</h4></li>
+        <li>Each player gets a turn, turns move clockwise. During your turn you can exchange only one card to the middle hand.</li>
+        <li><h4>The middle hand</h4></li>
+        <li>In the middle of the game surface (where the game is being played) there is the middle hand, which owns 5 cards just like a player. A player can exchange one of the middle cards and add it to their own hand in exchange of a card from their own hand. </li>
+        <li><h4>Knock</h4></li>
+        <li>Once a player feels comfortable with a strong pocker-hand they knock on the game surface letting know the rest of the players they can only exchange one of their cards for one more round before everyone shows their hands and the winner is revealed. </li>
+    </ul>
+</div></div>
+        </div>
+    </div>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/javascripts/client.js">
+        main()
+    </script>
 </body>
-<script src="/javascripts/client.js">
-main()
-</script>
 
 </html>
