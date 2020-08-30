@@ -23,6 +23,7 @@ module.exports = class Game{
             "7C", "8C", "9C",
             "10C", "JC", "QC", "KC",
         ];
+        this.middle_deck = [];
         this.turn = 0;
     }
 
@@ -38,8 +39,23 @@ module.exports = class Game{
         this.players.push(id = {
             username : username,
             id : id,
-            is_ready: false
+            is_ready: false,
+            deck : []
         } )
+    }
+
+    getPlayerIndexById(id){
+        let players = this.players;
+        let index = -1;
+        players.find(function(item, i){
+            if (item != undefined) {
+                if(id === item.id){
+                    index = i;
+                    return i;
+                }
+            }
+          });
+        return index;
     }
 
     deletePlayer(id){
@@ -75,7 +91,7 @@ module.exports = class Game{
             let arr = {
                 username    : element.username,
                 is_ready    : element.is_ready,
-                id          : element.id 
+                id          : element.id,
             }
             player_list.push(arr);
             player_num++;
@@ -84,6 +100,27 @@ module.exports = class Game{
             player_list : player_list ,
             player_size : player_num,
         };
+    }
+
+    getPlayerDeckById(id){
+        let players = this.players;
+        let index = this.getPlayerIndexById(id);
+        return players[index].deck;
+    }
+
+    setDeckToPlayer(id, deck){
+        let players = this.players;
+        let index = this.getPlayerIndexById(id);
+            players[index].deck = deck;
+    }
+    
+    setMiddleDeck(arr){
+        let middle_deck = this.middle_deck;
+        middle_deck = arr;
+    }
+
+    getMiddleDeck(){
+        return this.middle_deck;
     }
 
     getDeck() {

@@ -28,15 +28,26 @@ io.on('connection', (socket) => {
         game.deletePlayer(socket.id);
         updateBoard();
     });
-    socket.on("passturn", (data) => {
+    socket.on("swapall", (data) => {
+        let middle_deck = game.getMiddleDeck();
+        game.setDeckToPlayer(socket.id, middle_deck);
+        game.setMiddleDeck(data);
+        sendToUserById(socket.id, "updatedeck", game.getPlayerDeckById(socket.id))
+    })
+    socket.on("middle", (data) => {
+        sendToEveryone("middle", data)
+    })
+    socket.on("passturn", () => {
         gameLoop();
     })
 
     function gameLoop(){
         let turn = game.getTurn();
         let players = game.getPlayerList();
-        let current_player = players.player_list[turn]
-        sendToEveryone("turn", { turn : current_player })
+        let current_player = players.player_list[turn];
+        let middle_deck = game.getMiddleDeck();
+        sendToEveryone("updateturn", { turn : current_player })
+        sendToEveryone("middleupdate", { middle_deck : middle_deck } );
         sendToUserById(current_player.id ,"giveturn", { turn : true })
 
         turn = (turn++ < (players.player_size-1)) ? turn++ : 0;
@@ -45,7 +56,7 @@ io.on('connection', (socket) => {
 });
 
 function updateBoard(){
-    io.sockets.emit("updateBoard", game.getPlayerList())
+    io.sockets.emit("updateboard", game.getPlayerList())
 }
 
 function areAllReady(){
@@ -80,7 +91,8 @@ function startGame(callback){
                     shuffled_deck[4+range]
                     ]
         let id = players.player_list[i].id;
-        sendToUserById(id, "cards", { deck : deck });
+        sendToUserById(id, "startgame", { deck : deck });
+        game.setDeckToPlayer(id, {deck : deck})
     }
     let max_range = ((1+players.player_size)*5)
     middle_deck = [
@@ -90,7 +102,7 @@ function startGame(callback){
                     shuffled_deck[3+max_range],
                     shuffled_deck[4+max_range]
                 ]
-    sendToEveryone("middle", { middle_deck: middle_deck } );
+    game.setMiddleDeck(middle_deck);
     callback()
 }
 

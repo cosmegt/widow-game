@@ -17,25 +17,29 @@ socket = io('http://80.70.60.14:3000', { //TODO: Change this for production
     path: '/socket'
 });
 
-socket.on('addplayer', (data) => {
-    console.log(data.username + " has joined.")
-});
-
 socket.on('connect', () => {
     console.log("your socket id: " + socket.id);
 });
 
-socket.on('updateBoard', (data) => {
+socket.on('addplayer', (data) => {
+    console.log(data.username + " has joined.")
+});
+
+socket.on('updateboard', (data) => {
     Controller.update_player_board(data)
 })
 
-socket.on("cards", (data) => {
+socket.on("startgame", (data) => {
     Controller.game_start(data);
 })
-socket.on("middle", (data) => {
-    Controller.update_middle(data)
+socket.on("updatecards", (data) => {
+    Controller.update_cards_to_middle(data)
 })
-socket.on("turn", (data) => {
+socket.on("updatemiddle", (data) => {
+    Controller.update_cards_to_middle(data)
+})
+
+socket.on("updateturn", (data) => {
     Controller.update_turn_info(data);
 })
 socket.on("giveturn", () => {
@@ -43,9 +47,6 @@ socket.on("giveturn", () => {
 })
 
 ready(function(){
-    /**
-     * Initiating classes
-     */
     const   controller = new Controller;
             controller.setup();
 });
@@ -78,7 +79,15 @@ class Controller{
 
     pass_turn(){
         document.getElementById("next-turn").disabled = true;
+        $("#swap-deck").remove();
         Game.pass_turn();
+    }
+
+    static game_start(cards){
+        Controller.removeAllChildNodes(document.getElementById("card-container"));
+        Controller.add_cards_to_middle();
+        Controller.add_cards_to_deck(cards);
+        Controller.show_game_info();
     }
 
     static remove_join_button(){
@@ -107,19 +116,21 @@ class Controller{
         }
     }
 
-    static game_start(cards){
-        Controller.removeAllChildNodes(document.getElementById("card-container"));
-        Controller.add_cards_to_middle();
-        Controller.add_cards_to_deck(cards);
-        Controller.show_game_info();
-    }
-
     static add_cards_to_deck(deck){
         let CONTAINER_HTML = `<div class="image-container" id="image_container"></div>`;
         let CONTAINER = document.getElementById("card-container").innerHTML
         document.getElementById("card-container").innerHTML = CONTAINER + CONTAINER_HTML;
         for(let card of deck.deck){
-            let IMG_ELEMENT = `<img class="home-cards" src="/images/${card}.png">`
+            let IMG_ELEMENT = `<img class="home-cards" id="${card}" src="/images/${card}.png">`
+            let img_container = document.getElementById("image_container");
+            img_container.innerHTML = img_container.innerHTML + IMG_ELEMENT;
+        }
+    }
+
+    static update_cards_to_deck(deck){
+        Controller.removeAllChildNodes(document.getElementById("image_container"))
+        for (let card of deck.deck){
+            let IMG_ELEMENT = `<img class="home-cards" id="${card}" src="/images/${card}.png">`
             let img_container = document.getElementById("image_container");
             img_container.innerHTML = img_container.innerHTML + IMG_ELEMENT;
         }
@@ -130,6 +141,15 @@ class Controller{
         document.getElementById("card-container").innerHTML = CONTAINER_HTML;
         for(let i = 0; i < 5; i++){
             let IMG_ELEMENT = `<img class="middle-cards" src="/images/gray_back.png">`
+            let img_container = document.getElementById("image_middle_container");
+            img_container.innerHTML = img_container.innerHTML + IMG_ELEMENT;
+        }
+    }
+
+    static update_cards_to_middle(deck){
+        Controller.removeAllChildNodes(document.getElementById("image_middle_container"))
+        for (let card of deck.middle_deck){
+            let IMG_ELEMENT = `<img class="middle-cards" id="${card}" src="/images/${card}.png">`
             let img_container = document.getElementById("image_middle_container");
             img_container.innerHTML = img_container.innerHTML + IMG_ELEMENT;
         }
@@ -152,10 +172,10 @@ class Controller{
 
     static give_turn(){
         document.getElementById("next-turn").disabled = false;
-    }
-
-    static update_middle(){
-
+        $(document).on("click", ".home-cards", function(){
+            $(".home-cards").not(this).css("border", "none")
+            $(this).css("border", "2px dashed black");
+        })
     }
 
 }   
@@ -177,6 +197,12 @@ class Game{
     static pass_turn(){
         console.log("passing turn")
         socket.emit("passturn", "next turn")
+    }
+
+    static swap_deck(){
+        socket.emit("swapall", {
+            swap: true
+        })
     }
 
 }
