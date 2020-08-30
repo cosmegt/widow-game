@@ -21,6 +21,7 @@ io.on('connection', (socket) => {
         let all_ready = areAllReady();
         if(all_ready){
             startGame(gameLoop);
+            sendLog("Game has started");
         }
     })
     socket.on("disconnect", (data) => {
@@ -39,6 +40,13 @@ io.on('connection', (socket) => {
     socket.on("passturn", () => {
         gameLoop();
     })
+    socket.on("setbuffer", () => {
+        game.setBuffer(game.getTurn()-1);
+        sendLog("Someone Knocked. Final Round.")
+    })
+    socket.on("knock", () => {
+        lastRound();
+    })
 
     function gameLoop(){
         let turn = game.getTurn();
@@ -53,6 +61,44 @@ io.on('connection', (socket) => {
         turn = (turn++ < (players.player_size-1)) ? turn++ : 0;
         game.setTurn(turn);
     }
+
+    function lastRound(){
+        let turn = game.getTurn();
+
+        let players = game.getPlayerList();
+        let buffer  = game.getBuffer();
+        
+        let compute = (turn != buffer);
+        if(compute){
+            if(turn == players.player_size){
+                turn = 0
+                let current_player = players.player_list[turn];
+                proceed(current_player)
+            }
+            else{
+                let current_player = players.player_list[turn];
+                proceed(current_player)
+                turn++
+            }
+        }
+        else{
+            endGame()
+        }
+        
+        function proceed(current_player){
+            sendToEveryone("updateturn", { turn : current_player })
+            sendToEveryone("updatemiddle", middle_deck)
+
+            sendToUserById(current_player.id ,"lastturn", { turn : true })
+        }
+    }
+
+    function endGame(){
+        sendLog("Game had ended");
+        let winner = game.computerWinner();
+        sendToEveryone("winner", winner);
+    }
+
 });
 
 function updateBoard(){
@@ -73,6 +119,9 @@ function sendToUserById(id, type, message){
 }
 function sendToEveryone(type, message){
     io.emit(type, message)
+}
+function sendLog(message){
+    io.emit("log", message);
 }
 
 

@@ -28,3 +28,17 @@ a {
 .game-info{
   opacity: 0;
 }
+.log{
+  position: absolute;
+  width: 25%;
+  height: 70px;
+  right: 20%;
+  z-index: 2;
+  background-color: white;
+  /* border: 1px solid black; */
+  /* overflow-y: scroll; */
+  
+}
+.log * {
+  margin: 15px;
+}

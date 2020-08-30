@@ -45,6 +45,16 @@ socket.on("updateturn", (data) => {
 socket.on("giveturn", () => {
     Controller.give_turn();
 })
+socket.on("lastturn", () => {
+    Controller.last_turn();
+})
+socket.on("log", (msg) => {
+    Controller.logger(msg);
+})
+socket.on("winner", (msg) => {
+    window.alert("Congratulations, " + msg.username)
+    Controller.logger(msg.username + " won with " + msg.descr );
+})
 socket.on("debug", (msg) => {
     console.log(msg)
 })
@@ -64,6 +74,8 @@ class Controller{
             .addEventListener("click", this.set_player_ready);
         document.getElementById("next-turn")
             .addEventListener("click", this.pass_turn);
+        document.getElementById("knock")
+            .addEventListener("click", this.pass_knock);
     }
 
     user_join_game(){
@@ -81,9 +93,24 @@ class Controller{
     }
 
     pass_turn(){
+        document.getElementById("swap-cards").disabled = true;
         document.getElementById("next-turn").disabled = true;
         Game.pass_turn();
     }
+
+    pass_knock(){
+        document.getElementById("swap-cards").disabled = true;
+        document.getElementById("knock").disabled = true;
+        document.getElementById("next-turn").disabled = true;
+        Game.knock();
+    }
+    static pass_last(){
+        document.getElementById("swap-cards").disabled = true;
+        document.getElementById("knock").disabled = true;
+        document.getElementById("next-turn").disabled = true;
+        Game.pass_last();
+    }
+
 
     static game_start(cards){
         Controller.removeAllChildNodes(document.getElementById("card-container"));
@@ -170,10 +197,32 @@ class Controller{
 
     static give_turn(){
         document.getElementById("swap-cards").disabled = false;
+        document.getElementById("knock").disabled = false;
+        document.getElementById("next-turn").disabled = false
         
         $(document).on("click", ".home-cards", Controller.handle_home_click)
         $(document).on("click", ".middle-cards", Controller.handle_middle_click)
         $(document).on("click", "#swap-cards", Controller.handle_swap)
+    }
+
+    static last_turn(){
+        document.getElementById("swap-cards").disabled = false;
+        document.getElementById("knock").disabled = true;
+        document.getElementById("next-turn").disabled = false;
+        $("#next-turn").html("Final Turn")
+        $(document).off("click", "#swap-cards", Controller.handle_swap);
+        $("#next-turn").on("click", () => {
+            $("next-turn").prop("disabled",true)
+            $("knock").prop("disabled",true)
+            $("swap-cards").prop("disabled",true)
+            Game.pass_last();
+        })
+        
+        $(document).on("click", ".home-cards", Controller.handle_home_click)
+        $(document).on("click", ".middle-cards", Controller.handle_middle_click)
+        $("#swap-cards").on("click", () => {
+            Controller.handle_swap_no_remove();
+        })
     }
 
     static handle_home_click(){
@@ -196,14 +245,26 @@ class Controller{
         if($(".home-cards.selected").attr("id") != undefined 
         && $(".middle-cards.selected").attr("id") != undefined)
         {
+            $("#swap-cards").prop("disabled", true);
+
+            Game.swap_cards($(".home-cards.selected").attr("id"),$(".middle-cards.selected").attr("id"));
+            Controller.swap_cards($(".home-cards.selected"), $(".middle-cards.selected"))
+            
+            Controller.remove_turn();
+        }
+        else{
+            window.alert("You need to select two cards");
+        }
+    }
+    static handle_swap_no_remove(){
+        if($(".home-cards.selected").attr("id") != undefined 
+        && $(".middle-cards.selected").attr("id") != undefined)
+        {
+            $("#knock").prop("disabled", true);
+            $("#swap-cards").prop("disabled",true);
             Game.swap_cards($(".home-cards.selected").attr("id"),$(".middle-cards.selected").attr("id"));
             Controller.swap_cards($(".home-cards.selected"), $(".middle-cards.selected"))
 
-            document.getElementById("swap-cards").disabled = true;
-            
-            
-            document.getElementById("next-turn").disabled = false;
-            Controller.remove_turn();
         }
         else{
             window.alert("You need to select two cards");
@@ -235,6 +296,10 @@ class Controller{
             .removeEventListener("click", Controller.swap_cards, true)
     }
 
+    static logger(msg){
+        $("#messages").html(msg);
+    }
+
 }   
 
 class Game{
@@ -258,6 +323,14 @@ class Game{
     static swap_cards(s1, s2){
         let swap = [s1,s2]
         socket.emit("swapcards", swap)
+    }
+
+    static knock(){
+        socket.emit("setbuffer", "bufferized");
+        socket.emit("knock", "final round");
+    }
+    static pass_last(){
+        socket.emit("knock", "final continue")
     }
 
 }

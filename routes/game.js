@@ -1,3 +1,5 @@
+var Hand = require('pokersolver').Hand;
+
 module.exports = class Game{
     constructor(){
         this.player_size = 0;
@@ -6,25 +8,41 @@ module.exports = class Game{
             "AceD", "2D", "3D",
             "4D", "5D", "6D",
             "7D", "8D", "9D",
-            "10D", "JD", "QD", "KD",
+            "TD", "JD", "QD", "KD",
 
             "AceS", "2S", "3S",
             "4S", "5S", "6S",
             "7S", "8S", "9S",
-            "10S", "JS", "QS", "KS",
+            "TS", "JS", "QS", "KS",
 
             "AceH", "2H", "3H",
             "4H", "5H", "6H",
             "7H", "8H", "9H",
-            "10H", "JH", "QH", "KH",
+            "TH", "JH", "QH", "KH",
 
             "AceC", "2C", "3C",
             "4C", "5C", "6C",
             "7C", "8C", "9C",
-            "10C", "JC", "QC", "KC",
+            "TC", "JC", "QC", "KC",
         ];
         this.middle_deck = [];
         this.turn = 0;
+        this.buffer;
+    }
+
+    computerWinner(){
+        let players = this.players;
+        let all_hands = [];
+        for(let i in players){
+            let current = Hand.solve(players[i].deck)
+                current.username = players[i].username
+            all_hands.push(current)
+        }
+        console.log(all_hands);
+        let best = Hand.winners(all_hands)
+        let winner = best[0]
+        return winner
+
     }
 
     getTurn(){
@@ -32,6 +50,12 @@ module.exports = class Game{
     }
     setTurn(val){
         this.turn = val;
+    }
+    getBuffer(){
+        return this.buffer
+    }
+    setBuffer(val){
+        this.buffer = val;
     }
 
     addPlayer(id, username){
@@ -119,7 +143,6 @@ module.exports = class Game{
     }
 
     swapCards(arr, id){
-        console.log(arr);
         let player_index = this.getPlayerIndexById(id);
         let players = this.players;
 
@@ -157,5 +180,6 @@ module.exports = class Game{
         }
       
         return deck;
-      }
+    }
+    
 }

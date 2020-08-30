@@ -17,6 +17,9 @@
     <div class="container" style="padding: 30px;">
         <h1 class="text-center text-danger" style="color: rgb(224,35,53);font-size: 50px;font-family: Montserrat, sans-serif;text-align: center;"><strong style="font-family: 'Playfair Display', serif;text-align: center;width: 0px;letter-spacing: 4px;color: rgb(55,55,55);">Widow - The Card Game</strong></h1>
     </div>
+    <div class="log">
+        <h4 id="messages">Messages</h4>
+    </div>
     <div class="container">
         <div class="game-info" id="game-info">
             <h2 id="turn-info"></h2>
@@ -31,6 +34,13 @@
             <button 
                 class="btn btn-primary"
                 type="button"
+                id="knock"
+                disabled>
+                Knock
+            </button>
+            <button 
+                class="btn btn-primary"
+                type="button"
                 id="next-turn"
                 disabled>
                 Next Turn
@@ -41,6 +51,11 @@
             <div class="card">
                 <div class="card-body">
                     <h3 class="d-xl-flex justify-content-xl-center align-items-xl-center">Players - <span id="num_of_players">0</span> / 6</h3>
+                    <p>
+                        Players, the filename for the card ace of diamonds (ad.png) 
+                        is blocked by adblock. Please disabled adblock for a better experience.
+                        All players need to be ready to start the game.
+                    </p>
                     <ul class="list-group" id="player_board"></ul>
                 </div>
             </div>
