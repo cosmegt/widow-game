@@ -20,7 +20,7 @@ io.on('connection', (socket) => {
         updateBoard();
         let all_ready = areAllReady();
         if(all_ready){
-            startGame();
+            startGame(gameLoop);
         }
     })
     socket.on("disconnect", (data) => {
@@ -28,6 +28,17 @@ io.on('connection', (socket) => {
         game.deletePlayer(socket.id);
         updateBoard();
     });
+
+    function gameLoop(){
+        let turn = game.getTurn();
+        let players = game.getPlayerList();
+        let current_player = players.player_list[turn]
+        sendToEveryone("turn", { turn : current_player })
+        sendToUserById(current_player.id ,"giveturn", { turn : true })
+
+        turn = (turn++ < (players.player_size-1)) ? turn++ : 0;
+        game.setTurn(turn);
+    }
 });
 
 function updateBoard(){
@@ -51,7 +62,7 @@ function sendToEveryone(type, message){
 }
 
 
-function startGame(){
+function startGame(callback){
     // Split cards
     let shuffled_deck = game.getShuffledDeck();
     let players = game.getPlayerList();
@@ -77,6 +88,7 @@ function startGame(){
                     shuffled_deck[4+max_range]
                 ]
     sendToEveryone("middle", { middle_deck: middle_deck } );
+    callback()
 }
 
 module.exports = socket;

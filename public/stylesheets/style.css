@@ -17,3 +17,10 @@ a {
   width: 15%;
   margin: 15px;
 }
+
+.middle-cards {
+  vertical-align: middle;
+  border-style: none;
+  width: 15%;
+  margin: 15px
+}

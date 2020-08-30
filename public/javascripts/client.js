@@ -101,8 +101,9 @@ class Controller{
     }
 
     static add_cards_to_deck(deck){
-        let CONTAINER_HTML = `<div class="image-container" id="image_container"></div>`
-        document.getElementById("card-container").innerHTML = CONTAINER_HTML;
+        let CONTAINER_HTML = `<div class="image-container" id="image_container"></div>`;
+        let CONTAINER = document.getElementById("card-container").innerHTML
+        document.getElementById("card-container").innerHTML = CONTAINER + CONTAINER_HTML;
         for(let card of deck.deck){
             let IMG_ELEMENT = `<img class="home-cards" src="/images/${card}.png">`
             let img_container = document.getElementById("image_container");
@@ -111,11 +112,11 @@ class Controller{
     }
 
     static add_cards_to_middle(){
-        let CONTAINER_HTML = `<div class="image-container" id="image_container"></div>`
+        let CONTAINER_HTML = `<div class="image-container" id="image_middle_container"></div>`
         document.getElementById("card-container").innerHTML = CONTAINER_HTML;
         for(let i = 0; i < 5; i++){
             let IMG_ELEMENT = `<img class="middle-cards" src="/images/gray_back.png">`
-            let img_container = document.getElementById("image_container");
+            let img_container = document.getElementById("image_middle_container");
             img_container.innerHTML = img_container.innerHTML + IMG_ELEMENT;
         }
     }
