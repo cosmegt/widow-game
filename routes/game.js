@@ -115,8 +115,21 @@ module.exports = class Game{
     }
     
     setMiddleDeck(arr){
+        this.middle_deck = arr;
+    }
+
+    swapCards(arr, id){
+        console.log(arr);
+        let player_index = this.getPlayerIndexById(id);
+        let players = this.players;
+
+        let user_card_index = players[player_index].deck.indexOf(arr[0]);
+        players[player_index].deck[user_card_index] = arr[1];
+
         let middle_deck = this.middle_deck;
-        middle_deck = arr;
+        let middle_card_index = middle_deck.indexOf(arr[1]);
+        middle_deck[middle_card_index] = arr[0];
+
     }
 
     getMiddleDeck(){

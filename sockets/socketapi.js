@@ -11,7 +11,7 @@ io.on('connection', (socket) => {
     updateBoard();
 
     socket.on('addplayer', (data) => {
-        io.sockets.emit('addplayer', data)
+        sendToEveryone('addplayer', data)
         game.addPlayer(data.id, data.username);
         updateBoard();
     });
@@ -28,14 +28,13 @@ io.on('connection', (socket) => {
         game.deletePlayer(socket.id);
         updateBoard();
     });
-    socket.on("swapall", (data) => {
-        let middle_deck = game.getMiddleDeck();
-        game.setDeckToPlayer(socket.id, middle_deck);
-        game.setMiddleDeck(data);
-        sendToUserById(socket.id, "updatedeck", game.getPlayerDeckById(socket.id))
-    })
     socket.on("middle", (data) => {
         sendToEveryone("middle", data)
+    })
+    socket.on("swapcards", (data) => {
+        game.swapCards(data, socket.id);
+        let middle_deck = game.getMiddleDeck();
+        sendToEveryone("updatemiddle", middle_deck);
     })
     socket.on("passturn", () => {
         gameLoop();
@@ -45,9 +44,10 @@ io.on('connection', (socket) => {
         let turn = game.getTurn();
         let players = game.getPlayerList();
         let current_player = players.player_list[turn];
-        let middle_deck = game.getMiddleDeck();
+
         sendToEveryone("updateturn", { turn : current_player })
-        sendToEveryone("middleupdate", { middle_deck : middle_deck } );
+        sendToEveryone("updatemiddle", middle_deck )
+        
         sendToUserById(current_player.id ,"giveturn", { turn : true })
 
         turn = (turn++ < (players.player_size-1)) ? turn++ : 0;
@@ -91,8 +91,8 @@ function startGame(callback){
                     shuffled_deck[4+range]
                     ]
         let id = players.player_list[i].id;
-        sendToUserById(id, "startgame", { deck : deck });
-        game.setDeckToPlayer(id, {deck : deck})
+        sendToUserById(id, "startgame", deck);
+        game.setDeckToPlayer(id, deck)
     }
     let max_range = ((1+players.player_size)*5)
     middle_deck = [

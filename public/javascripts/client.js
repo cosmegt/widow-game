@@ -33,7 +33,7 @@ socket.on("startgame", (data) => {
     Controller.game_start(data);
 })
 socket.on("updatecards", (data) => {
-    Controller.update_cards_to_middle(data)
+    Controller.update_cards_to_deck(data)
 })
 socket.on("updatemiddle", (data) => {
     Controller.update_cards_to_middle(data)
@@ -44,6 +44,9 @@ socket.on("updateturn", (data) => {
 })
 socket.on("giveturn", () => {
     Controller.give_turn();
+})
+socket.on("debug", (msg) => {
+    console.log(msg)
 })
 
 ready(function(){
@@ -79,7 +82,6 @@ class Controller{
 
     pass_turn(){
         document.getElementById("next-turn").disabled = true;
-        $("#swap-deck").remove();
         Game.pass_turn();
     }
 
@@ -117,19 +119,10 @@ class Controller{
     }
 
     static add_cards_to_deck(deck){
-        let CONTAINER_HTML = `<div class="image-container" id="image_container"></div>`;
+        let CONTAINER_HTML = `<h4>Your Cards</h4><div class="image-container" id="image_container"></div>`;
         let CONTAINER = document.getElementById("card-container").innerHTML
         document.getElementById("card-container").innerHTML = CONTAINER + CONTAINER_HTML;
-        for(let card of deck.deck){
-            let IMG_ELEMENT = `<img class="home-cards" id="${card}" src="/images/${card}.png">`
-            let img_container = document.getElementById("image_container");
-            img_container.innerHTML = img_container.innerHTML + IMG_ELEMENT;
-        }
-    }
-
-    static update_cards_to_deck(deck){
-        Controller.removeAllChildNodes(document.getElementById("image_container"))
-        for (let card of deck.deck){
+        for(let card of deck){
             let IMG_ELEMENT = `<img class="home-cards" id="${card}" src="/images/${card}.png">`
             let img_container = document.getElementById("image_container");
             img_container.innerHTML = img_container.innerHTML + IMG_ELEMENT;
@@ -137,7 +130,7 @@ class Controller{
     }
 
     static add_cards_to_middle(){
-        let CONTAINER_HTML = `<div class="image-container" id="image_middle_container"></div>`
+        let CONTAINER_HTML = `<h4>Middle Cards</h4><div class="image-container" id="image_middle_container"></div>`
         document.getElementById("card-container").innerHTML = CONTAINER_HTML;
         for(let i = 0; i < 5; i++){
             let IMG_ELEMENT = `<img class="middle-cards" src="/images/gray_back.png">`
@@ -147,17 +140,22 @@ class Controller{
     }
 
     static update_cards_to_middle(deck){
-        Controller.removeAllChildNodes(document.getElementById("image_middle_container"))
-        for (let card of deck.middle_deck){
-            let IMG_ELEMENT = `<img class="middle-cards" id="${card}" src="/images/${card}.png">`
-            let img_container = document.getElementById("image_middle_container");
-            img_container.innerHTML = img_container.innerHTML + IMG_ELEMENT;
+        for (let i in deck){
+            let current_image = $("#image_middle_container").children().eq(i);
+            let url = `/images/${deck[i]}.png`;
+            let id = deck[i];
+            Controller.update_image_source(current_image, url, id);
         }
     }
 
     static update_turn_info(data){
         let current_player = data.turn.username;
-        document.getElementById("turn-info").innerHTML = current_player;
+        $("#turn-info").html(current_player + "'s Turn.");
+    }
+
+    static update_image_source(image, url, id){
+        image.attr("src", url);
+        image.attr("id", id);
     }
 
     static show_game_info(){
@@ -171,11 +169,70 @@ class Controller{
     }
 
     static give_turn(){
-        document.getElementById("next-turn").disabled = false;
-        $(document).on("click", ".home-cards", function(){
-            $(".home-cards").not(this).css("border", "none")
-            $(this).css("border", "2px dashed black");
-        })
+        document.getElementById("swap-cards").disabled = false;
+        
+        $(document).on("click", ".home-cards", Controller.handle_home_click)
+        $(document).on("click", ".middle-cards", Controller.handle_middle_click)
+        $(document).on("click", "#swap-cards", Controller.handle_swap)
+    }
+
+    static handle_home_click(){
+        $(".home-cards").not(this).css("border", "none")
+        $(".home-cards").not(this).removeClass("selected")
+
+        $(this).css("border", "2px dashed black");;
+        $(this).addClass("selected");
+    }
+
+    static handle_middle_click(){
+        $(".middle-cards").not(this).css("border", "none");
+        $(".middle-cards").not(this).removeClass("selected")
+
+        $(this).css("border", "2px dashed black");
+        $(this).addClass("selected");
+    }
+
+    static handle_swap(){
+        if($(".home-cards.selected").attr("id") != undefined 
+        && $(".middle-cards.selected").attr("id") != undefined)
+        {
+            Game.swap_cards($(".home-cards.selected").attr("id"),$(".middle-cards.selected").attr("id"));
+            Controller.swap_cards($(".home-cards.selected"), $(".middle-cards.selected"))
+
+            document.getElementById("swap-cards").disabled = true;
+            
+            
+            document.getElementById("next-turn").disabled = false;
+            Controller.remove_turn();
+        }
+        else{
+            window.alert("You need to select two cards");
+        }
+    }
+
+    static swap_cards(card1, card2){
+
+        let url_for_2 = card1.attr('src');
+        let url_for_1 = card2.attr("src");
+
+        let id_for_2 = card1.attr("id");
+        let id_for_1 = card2.attr("id");
+
+        card1.attr("src", url_for_1);
+        card1.attr("id", id_for_1);
+
+        card2.attr("src", url_for_2);
+        card2.attr("id", id_for_2);
+
+    }
+
+    static remove_turn(){
+        document.getElementsByClassName("home-cards")
+            .removeEventListener("click", Controller.handle_home_click, true);
+        document.getElementsByClassName("middle-cards")
+            .removeEventListener("click", Controller.handle_middle_click, true)
+        document.getElementById("swap-cards")
+            .removeEventListener("click", Controller.swap_cards, true)
     }
 
 }   
@@ -195,14 +252,12 @@ class Game{
         });
     }
     static pass_turn(){
-        console.log("passing turn")
         socket.emit("passturn", "next turn")
     }
 
-    static swap_deck(){
-        socket.emit("swapall", {
-            swap: true
-        })
+    static swap_cards(s1, s2){
+        let swap = [s1,s2]
+        socket.emit("swapcards", swap)
     }
 
 }
