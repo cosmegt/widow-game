@@ -35,6 +35,12 @@ socket.on("cards", (data) => {
 socket.on("middle", (data) => {
     Controller.update_middle(data)
 })
+socket.on("turn", (data) => {
+    Controller.update_turn_info(data);
+})
+socket.on("giveturn", () => {
+    Controller.give_turn();
+})
 
 ready(function(){
     /**
@@ -52,6 +58,8 @@ class Controller{
         
         document.getElementById("ready")
             .addEventListener("click", this.set_player_ready);
+        document.getElementById("next-turn")
+            .addEventListener("click", this.pass_turn);
     }
 
     user_join_game(){
@@ -66,6 +74,11 @@ class Controller{
 
     set_player_ready(){
         Game.set_player_ready();
+    }
+
+    pass_turn(){
+        document.getElementById("next-turn").disabled = true;
+        Game.pass_turn();
     }
 
     static remove_join_button(){
@@ -97,7 +110,8 @@ class Controller{
     static game_start(cards){
         Controller.removeAllChildNodes(document.getElementById("card-container"));
         Controller.add_cards_to_middle();
-        Controller.add_cards_to_deck(cards)
+        Controller.add_cards_to_deck(cards);
+        Controller.show_game_info();
     }
 
     static add_cards_to_deck(deck){
@@ -121,10 +135,23 @@ class Controller{
         }
     }
 
+    static update_turn_info(data){
+        let current_player = data.turn.username;
+        document.getElementById("turn-info").innerHTML = current_player;
+    }
+
+    static show_game_info(){
+        document.getElementById("game-info").style.opacity = "1";
+    }
+
     static removeAllChildNodes(parent) {
         while (parent.firstChild) {
             parent.removeChild(parent.firstChild);
         }
+    }
+
+    static give_turn(){
+        document.getElementById("next-turn").disabled = false;
     }
 
     static update_middle(){
@@ -146,6 +173,10 @@ class Game{
         socket.emit("playerready", {
             ready: true
         });
+    }
+    static pass_turn(){
+        console.log("passing turn")
+        socket.emit("passturn", "next turn")
     }
 
 }

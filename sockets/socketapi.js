@@ -28,6 +28,9 @@ io.on('connection', (socket) => {
         game.deletePlayer(socket.id);
         updateBoard();
     });
+    socket.on("passturn", (data) => {
+        gameLoop();
+    })
 
     function gameLoop(){
         let turn = game.getTurn();

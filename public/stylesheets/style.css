@@ -24,3 +24,7 @@ a {
   width: 15%;
   margin: 15px
 }
+
+.game-info{
+  opacity: 0;
+}
