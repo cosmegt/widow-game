@@ -18,28 +18,65 @@ io.on('connection', (socket) => {
     socket.on("playerready", () => {
         game.playerReady(socket.id);
         updateBoard();
-        let all_ready = are_all_ready();
-        console.log(all_ready);
+        let all_ready = areAllReady();
+        if(all_ready){
+            startGame();
+        }
     })
-
     socket.on("disconnect", (data) => {
         console.log("A user disconnected " + data);
         game.deletePlayer(socket.id);
         updateBoard();
-    })
+    });
 });
 
 function updateBoard(){
     io.sockets.emit("updateBoard", game.getPlayerList())
 }
 
-function are_all_ready(){
+function areAllReady(){
     let list = game.getPlayerList();
     let all_true = 0;
     for(let i = 0; i < list.player_size; i++){
         all_true += list.player_list[i].is_ready;
     }
     return (all_true === list.player_size && all_true > 1)
+}
+
+function sendToUserById(id, type, message){
+    io.to(id).emit(type, message)
+}
+function sendToEveryone(type, message){
+    io.emit(type, message)
+}
+
+
+function startGame(){
+    // Split cards
+    let shuffled_deck = game.getShuffledDeck();
+    let players = game.getPlayerList();
+    
+    for(let i = 0; i < players.player_size; i++){
+        range = ((i+1)*5)
+        let deck = [ 
+                    shuffled_deck[0+range],
+                    shuffled_deck[1+range],
+                    shuffled_deck[2+range],
+                    shuffled_deck[3+range],
+                    shuffled_deck[4+range]
+                    ]
+        let id = players.player_list[i].id;
+        sendToUserById(id, "cards", { deck : deck });
+    }
+    let max_range = ((1+players.player_size)*5)
+    middle_deck = [
+                    shuffled_deck[0+max_range],
+                    shuffled_deck[1+max_range],
+                    shuffled_deck[2+max_range],
+                    shuffled_deck[3+max_range],
+                    shuffled_deck[4+max_range]
+                ]
+    sendToEveryone("middle", { middle_deck: middle_deck } );
 }
 
 module.exports = socket;

@@ -29,6 +29,13 @@ socket.on('updateBoard', (data) => {
     Controller.update_player_board(data)
 })
 
+socket.on("cards", (data) => {
+    Controller.game_start(data);
+})
+socket.on("middle", (data) => {
+    Controller.update_middle(data)
+})
+
 ready(function(){
     /**
      * Initiating classes
@@ -85,6 +92,42 @@ class Controller{
         if(num_of_players >= 6){
             document.getElementById("join").disabled = true;
         }
+    }
+
+    static game_start(cards){
+        Controller.removeAllChildNodes(document.getElementById("card-container"));
+        Controller.add_cards_to_middle();
+        Controller.add_cards_to_deck(cards)
+    }
+
+    static add_cards_to_deck(deck){
+        let CONTAINER_HTML = `<div class="image-container" id="image_container"></div>`
+        document.getElementById("card-container").innerHTML = CONTAINER_HTML;
+        for(let card of deck.deck){
+            let IMG_ELEMENT = `<img class="home-cards" src="/images/${card}.png">`
+            let img_container = document.getElementById("image_container");
+            img_container.innerHTML = img_container.innerHTML + IMG_ELEMENT;
+        }
+    }
+
+    static add_cards_to_middle(){
+        let CONTAINER_HTML = `<div class="image-container" id="image_container"></div>`
+        document.getElementById("card-container").innerHTML = CONTAINER_HTML;
+        for(let i = 0; i < 5; i++){
+            let IMG_ELEMENT = `<img class="middle-cards" src="/images/gray_back.png">`
+            let img_container = document.getElementById("image_container");
+            img_container.innerHTML = img_container.innerHTML + IMG_ELEMENT;
+        }
+    }
+
+    static removeAllChildNodes(parent) {
+        while (parent.firstChild) {
+            parent.removeChild(parent.firstChild);
+        }
+    }
+
+    static update_middle(){
+
     }
 
 }   

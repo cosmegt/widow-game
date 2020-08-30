@@ -3,25 +3,25 @@ module.exports = class Game{
         this.player_size = 0;
         this.players = [];
         this.cards = [
-            "diamonds_a", "diamonds_2", "diamonds_3",
-            "diamonds_4", "diamonds_5", "diamonds_6",
-            "diamonds_7", "diamonds_8", "diamonds_9",
-            "diamonds_10", "diamonds_j", "diamonds_q", "diamonds_k",
+            "AD", "2D", "3D",
+            "4D", "5D", "6D",
+            "7D", "8D", "9D",
+            "10D", "JD", "QD", "KD",
 
-            "spades_a", "spades_2", "spades_3",
-            "spades_4", "spades_5", "spades_6",
-            "spades_7", "spades_8", "spades_9",
-            "spades_10", "spades_j", "spades_q", "spades_k",
+            "AS", "2S", "3S",
+            "4S", "5S", "6S",
+            "7S", "8S", "9S",
+            "10S", "JS", "QS", "KS",
 
-            "hearts_a", "hearts_2", "hearts_3",
-            "hearts_4", "hearts_5", "hearts_6",
-            "hearts_7", "hearts_8", "hearts_9",
-            "hearts_10", "hearts_j", "hearts_q", "hearts_k",
+            "AH", "2H", "3H",
+            "4H", "5H", "6H",
+            "7H", "8H", "9H",
+            "10H", "JH", "QH", "KH",
 
-            "clubs_a", "clubs_2", "clubs_3",
-            "clubs_4", "clubs_5", "clubs_6",
-            "clubs_7", "clubs_8", "clubs_9",
-            "clubs_10", "clubs_j", "clubs_q", "clubs_k"
+            "AC", "2C", "3C",
+            "4C", "5C", "6C",
+            "7C", "8C", "9C",
+            "10C", "JC", "QC", "KC",
         ];
     }
 
@@ -65,8 +65,9 @@ module.exports = class Game{
         let player_num = 0;
         this.players.forEach(element => {
             let arr = {
-                username : element.username,
-                is_ready : element.is_ready
+                username    : element.username,
+                is_ready    : element.is_ready,
+                id          : element.id 
             }
             player_list.push(arr);
             player_num++;
@@ -77,10 +78,10 @@ module.exports = class Game{
         };
     }
 
-    get_deck() {
+    getDeck() {
         return this.cards;
     }
-    get_shuffled_deck() {
+    getShuffledDeck() {
         let deck = this.cards;
         var currentIndex = deck.length, temporaryValue, randomIndex;
       
