@@ -13,7 +13,7 @@ function ready(callback){
 /**
      * Socket Configuration and Set up
      */
-socket = io('http://sandbox.cosmechavez.dev', { //TODO: Change this for production
+socket = io('https://sandbox.cosmechavez.dev', { //TODO: Change this for production
     path: '/socket'
 });
 
