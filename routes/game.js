@@ -38,7 +38,6 @@ module.exports = class Game{
                 current.username = players[i].username
             all_hands.push(current)
         }
-        console.log(all_hands);
         let best = Hand.winners(all_hands)
         let winner = best[0]
         return winner

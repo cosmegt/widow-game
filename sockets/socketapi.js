@@ -90,6 +90,7 @@ io.on('connection', (socket) => {
             sendToEveryone("updatemiddle", middle_deck)
 
             sendToUserById(current_player.id ,"lastturn", { turn : true })
+            console.log("giving turn to: " + current_player.username);
         }
     }
 
@@ -111,7 +112,7 @@ function areAllReady(){
     for(let i = 0; i < list.player_size; i++){
         all_true += list.player_list[i].is_ready;
     }
-    return (all_true === list.player_size && all_true > 1)
+    return (all_true === list.player_size && all_true > 2)
 }
 
 function sendToUserById(id, type, message){
