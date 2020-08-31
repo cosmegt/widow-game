@@ -67,7 +67,9 @@ io.on('connection', (socket) => {
 
         let players = game.getPlayerList();
         let buffer  = game.getBuffer();
-        
+        sendToEveryone("debug", turn);
+        sendToEveryone("debug", buffer);
+        sendToEveryone("debug", players.player_list[turn]);
         let compute = (turn != buffer);
         if(compute){
             if(turn == players.player_size){
@@ -90,7 +92,6 @@ io.on('connection', (socket) => {
             sendToEveryone("updatemiddle", middle_deck)
 
             sendToUserById(current_player.id ,"lastturn", { turn : true })
-            console.log("giving turn to: " + current_player.username);
         }
     }
 

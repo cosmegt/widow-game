@@ -13,7 +13,7 @@ function ready(callback){
 /**
      * Socket Configuration and Set up
      */
-socket = io("https://sandbox.cosmechavez.dev", { //TODO: Change this for production
+socket = io("http://80.70.60.14:3000", { //TODO: Change this for production
     path: '/socket'
 });
 
@@ -32,9 +32,6 @@ socket.on('updateboard', (data) => {
 socket.on("startgame", (data) => {
     Controller.game_start(data);
 })
-socket.on("updatecards", (data) => {
-    Controller.update_cards_to_deck(data)
-})
 socket.on("updatemiddle", (data) => {
     Controller.update_cards_to_middle(data)
 })
@@ -46,6 +43,7 @@ socket.on("giveturn", () => {
     Controller.give_turn();
 })
 socket.on("lastturn", () => {
+    console.log("request")
     Controller.last_turn();
 })
 socket.on("log", (msg) => {
@@ -95,6 +93,7 @@ class Controller{
     pass_turn(){
         document.getElementById("swap-cards").disabled = true;
         document.getElementById("next-turn").disabled = true;
+        document.getElementById("knock").disabled = true;
         Game.pass_turn();
     }
 
@@ -212,10 +211,7 @@ class Controller{
         $("#next-turn").html("Final Turn")
         $(document).off("click", "#swap-cards", Controller.handle_swap);
         $("#next-turn").on("click", () => {
-            $("next-turn").prop("disabled",true)
-            $("knock").prop("disabled",true)
-            $("swap-cards").prop("disabled",true)
-            Game.pass_last();
+            Controller.pass_last();
         })
         
         $(document).on("click", ".home-cards", Controller.handle_home_click)
@@ -331,7 +327,7 @@ class Game{
     }
     static pass_last(){
         socket.emit("knock", "final continue");
-        console.log("final bitchness")
+        console.log("final turn")
     }
 
 }
